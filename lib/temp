@@ -1,0 +1,128 @@
+import 'package:flutter/material.dart';
+import 'package:first_app/selectform.dart';
+
+void main() => runApp(const MyApp());
+GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Assignment 1 List in Flutter',
+      home: MyCustomForm(),
+    );
+  }
+}
+
+// Define a custom Form widget.
+class MyCustomForm extends StatefulWidget {
+  const MyCustomForm({Key? key}) : super(key: key);
+
+  @override
+  _MyCustomFormState createState() => _MyCustomFormState();
+}
+
+// Define a corresponding State class.
+// This class holds the data related to the Form.
+class _MyCustomFormState extends State<MyCustomForm> {
+  // Create a text controller and use it to retrieve the current value
+  // of the TextField.
+  var myController = TextEditingController();
+  String _valueSaved = '';
+  final List<Map<String, dynamic>> _items = [
+    {
+      'value': 'Mango',
+      'label': '1',
+    },
+    {
+      'value': 'Grape',
+      'label': '2',
+    },
+    {
+      'value': 'Apple',
+      'label': '3',
+    },
+    {
+      'value': 'Lemon',
+      'label': '4',
+    },
+    {
+      'value': 'Lime',
+      'label': '5',
+    },
+  ];
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
+  void initState() {
+    super.initState();
+    myController = TextEditingController(text: '2');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('List Exercise'),
+        ),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                Text(
+                  "\nBuah buahan",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text(
+                    "1. Mango \n2. Durian \n3. Apple \n4. Lemon \n5. Lime\n\n"),
+
+                SelectFormField(
+                  type: SelectFormFieldType.dialog,
+                  controller: myController,
+                  labelText: 'Enter your choice',
+                  dialogTitle: 'Pick a item',
+                  dialogCancelBtn: 'CANCEL',
+                  enableSearch: true,
+                  dialogSearchHint: 'Search item',
+                  items: _items,
+                  onSaved: (val) => setState(() => _valueSaved = val ?? ''),
+                ),
+                //TextField(controller: myController)
+              ],
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+            // When the user presses the button, show an alert dialog containing
+            // the text that the user has entered into the text field.
+            onPressed: () {
+          final formKey = _formKey.currentState;
+          if (formKey?.validate() == true) {
+            formKey?.save();
+          }
+          FloatingActionButton(
+            onPressed: () {
+              final formKey = _formKey.currentState;
+              formKey?.reset();
+
+              setState(() {
+                _valueSaved = '';
+                myController.clear();
+              });
+            },
+            child: const Text('Reset'),
+          );
+        }));
+  }
+}
+
